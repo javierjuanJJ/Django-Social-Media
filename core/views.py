@@ -1,4 +1,4 @@
-from django.contrib import messages
+from django.contrib import messages, auth
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -40,6 +40,23 @@ def signup(request):
         else:
             messages.info(request, 'Password not matching')
             return redirect('signup')
-        print(username)
     else:
         return render(request, 'signup.html')
+
+
+def signin(request):
+
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+
+        user = auth.authenticate(username=username, password=password)
+
+        if user is not None:
+            auth.login(request, user)
+            return redirect('/')
+        else:
+            messages.info(request, 'Credentials inalid')
+            return redirect('signin')
+    else:
+        return render(request, 'signin.html')
